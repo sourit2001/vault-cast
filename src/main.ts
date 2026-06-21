@@ -1,4 +1,4 @@
-import { Notice, Plugin, TAbstractFile } from "obsidian";
+import { Notice, Platform, Plugin, TAbstractFile } from "obsidian";
 import { AudioLibrary } from "./audio-library";
 import { DEFAULT_PLAYBACK_STATE, DEFAULT_SETTINGS } from "./defaults";
 import { PlaybackStore } from "./playback-store";
@@ -24,14 +24,22 @@ export default class VaultCastPlugin extends Plugin {
     );
 
     this.addRibbonIcon("headphones", "Open VaultCast", () => {
-      void this.activateView();
+      void this.activateView(Platform.isMobile);
     });
 
     this.addCommand({
       id: "open-vaultcast-player",
       name: "Open VaultCast player",
       callback: () => {
-        void this.activateView();
+        void this.activateView(Platform.isMobile);
+      }
+    });
+
+    this.addCommand({
+      id: "open-vaultcast-player-main",
+      name: "Open VaultCast player in main area",
+      callback: () => {
+        void this.activateView(true);
       }
     });
 
@@ -56,7 +64,17 @@ export default class VaultCastPlugin extends Plugin {
     this.app.workspace.detachLeavesOfType(VAULTCAST_VIEW_TYPE);
   }
 
-  async activateView(): Promise<void> {
+  async activateView(openInMainArea = false): Promise<void> {
+    if (openInMainArea) {
+      const leaf = this.app.workspace.getLeaf(true);
+      await leaf.setViewState({
+        type: VAULTCAST_VIEW_TYPE,
+        active: true
+      });
+      this.app.workspace.revealLeaf(leaf);
+      return;
+    }
+
     const leaves = this.app.workspace.getLeavesOfType(VAULTCAST_VIEW_TYPE);
     let leaf = leaves[0];
 

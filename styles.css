@@ -65,6 +65,25 @@
   padding: 14px;
 }
 
+.is-mobile .vaultcast-shell {
+  min-height: 100%;
+  padding: 16px;
+}
+
+.is-mobile .vaultcast-art {
+  min-height: 168px;
+}
+
+.is-mobile .vaultcast-track-title {
+  font-size: 22px;
+}
+
+.is-mobile .vaultcast-controls,
+.is-mobile .vaultcast-section,
+.is-mobile .vaultcast-hero {
+  border-radius: 10px;
+}
+
 .vaultcast-hero,
 .vaultcast-controls,
 .vaultcast-section {
