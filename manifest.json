@@ -1,0 +1,10 @@
+{
+  "id": "vaultcast",
+  "name": "VaultCast",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "A cute private podcast player for local audio files in your Obsidian vault.",
+  "author": "Li Zhu",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}

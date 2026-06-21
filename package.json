@@ -1,0 +1,25 @@
+{
+  "name": "vaultcast",
+  "version": "0.1.0",
+  "description": "A private podcast player for local audio files in Obsidian.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs --watch",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
+  },
+  "keywords": [
+    "obsidian",
+    "podcast",
+    "audio",
+    "tts"
+  ],
+  "author": "Li Zhu",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "builtin-modules": "^3.3.0",
+    "esbuild": "^0.23.0",
+    "obsidian": "^1.5.12",
+    "typescript": "^5.5.3"
+  }
+}

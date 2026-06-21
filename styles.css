@@ -1,0 +1,424 @@
+.vaultcast-view {
+  --vaultcast-bg: #fff8f1;
+  --vaultcast-panel: rgba(255, 255, 255, 0.74);
+  --vaultcast-panel-strong: rgba(255, 255, 255, 0.92);
+  --vaultcast-text: #312b2b;
+  --vaultcast-muted: rgba(49, 43, 43, 0.62);
+  --vaultcast-accent: #ff7a8a;
+  --vaultcast-accent-2: #ffd166;
+  --vaultcast-line: rgba(49, 43, 43, 0.11);
+  --vaultcast-shadow: 0 14px 34px rgba(70, 46, 28, 0.12);
+  --vaultcast-radius: 8px;
+  height: 100%;
+  overflow: auto;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--vaultcast-accent) 18%, transparent), transparent 34%),
+    linear-gradient(180deg, var(--vaultcast-bg), color-mix(in srgb, var(--vaultcast-bg) 82%, var(--background-primary)));
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-theme-spring {
+  --vaultcast-bg: #fbfff8;
+  --vaultcast-text: #26352a;
+  --vaultcast-muted: rgba(38, 53, 42, 0.64);
+  --vaultcast-accent: #7fcf93;
+  --vaultcast-accent-2: #ffb7c7;
+  --vaultcast-line: rgba(38, 53, 42, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(65, 104, 70, 0.12);
+}
+
+.vaultcast-theme-summer {
+  --vaultcast-bg: #f5fbff;
+  --vaultcast-text: #183042;
+  --vaultcast-muted: rgba(24, 48, 66, 0.64);
+  --vaultcast-accent: #50b7ff;
+  --vaultcast-accent-2: #ffe779;
+  --vaultcast-line: rgba(24, 48, 66, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(33, 111, 160, 0.13);
+}
+
+.vaultcast-theme-autumn {
+  --vaultcast-bg: #fff9f1;
+  --vaultcast-text: #3d2518;
+  --vaultcast-muted: rgba(61, 37, 24, 0.64);
+  --vaultcast-accent: #e88945;
+  --vaultcast-accent-2: #d94848;
+  --vaultcast-line: rgba(61, 37, 24, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(131, 69, 31, 0.14);
+}
+
+.vaultcast-theme-winter {
+  --vaultcast-bg: #f6f8ff;
+  --vaultcast-text: #202942;
+  --vaultcast-muted: rgba(32, 41, 66, 0.64);
+  --vaultcast-accent: #87bfff;
+  --vaultcast-accent-2: #c8b6ff;
+  --vaultcast-line: rgba(32, 41, 66, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(53, 74, 120, 0.14);
+}
+
+.vaultcast-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.vaultcast-hero,
+.vaultcast-controls,
+.vaultcast-section {
+  border: 1px solid var(--vaultcast-line);
+  border-radius: var(--vaultcast-radius);
+  background: var(--vaultcast-panel);
+  box-shadow: var(--vaultcast-shadow);
+  backdrop-filter: blur(14px);
+}
+
+.vaultcast-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.vaultcast-hero-top,
+.vaultcast-time-row,
+.vaultcast-section-header,
+.vaultcast-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vaultcast-kicker {
+  overflow: hidden;
+  color: var(--vaultcast-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.vaultcast-art {
+  position: relative;
+  display: grid;
+  min-height: 112px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--vaultcast-radius);
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--vaultcast-accent-2) 52%, transparent), transparent 32%),
+    radial-gradient(circle at 82% 14%, color-mix(in srgb, var(--vaultcast-accent) 42%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--vaultcast-accent) 72%, white), color-mix(in srgb, var(--vaultcast-accent-2) 68%, white));
+}
+
+.vaultcast-art-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-art-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.vaultcast-art-orbit {
+  position: absolute;
+  width: 126px;
+  height: 126px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 50%;
+}
+
+.vaultcast-track-title {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--vaultcast-text);
+  font-size: 18px;
+  font-weight: 760;
+  line-height: 1.24;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vaultcast-track-subtitle {
+  overflow: hidden;
+  color: var(--vaultcast-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vaultcast-latest-button,
+.vaultcast-pill-button,
+.vaultcast-icon-button,
+.vaultcast-track-item,
+.vaultcast-recent-item {
+  cursor: pointer;
+  border: 0;
+  font: inherit;
+}
+
+.vaultcast-latest-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  border-radius: var(--vaultcast-radius);
+  background: var(--vaultcast-text);
+  color: var(--vaultcast-bg);
+  font-weight: 740;
+}
+
+.vaultcast-latest-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.vaultcast-controls {
+  padding: 12px;
+}
+
+.vaultcast-time-row {
+  color: var(--vaultcast-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vaultcast-progress {
+  display: block;
+  width: 100% !important;
+  min-width: 100%;
+  max-width: 100% !important;
+  margin: 8px 0 4px;
+  accent-color: var(--vaultcast-accent);
+}
+
+.vaultcast-button-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0 12px;
+}
+
+.vaultcast-icon-button {
+  display: inline-grid;
+  min-width: 36px;
+  min-height: 36px;
+  place-items: center;
+  border-radius: var(--vaultcast-radius);
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-play-button {
+  min-height: 46px;
+  background: linear-gradient(135deg, var(--vaultcast-accent), var(--vaultcast-accent-2));
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vaultcast-pill-button,
+.vaultcast-select,
+.vaultcast-volume {
+  min-height: 32px;
+  border: 1px solid var(--vaultcast-line);
+  border-radius: var(--vaultcast-radius);
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-pill-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+.vaultcast-select {
+  padding: 0 8px;
+}
+
+.vaultcast-volume {
+  display: flex;
+  flex: 1 0 100%;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 0 8px;
+}
+
+.vaultcast-volume-label {
+  flex: 0 0 auto;
+  color: var(--vaultcast-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.vaultcast-volume input {
+  flex: 1;
+  width: 100% !important;
+  min-width: 0;
+  max-width: 100% !important;
+  accent-color: var(--vaultcast-accent);
+}
+
+.vaultcast-section {
+  padding: 12px;
+}
+
+.vaultcast-section-header h4 {
+  margin: 0;
+  color: var(--vaultcast-text);
+  font-size: 13px;
+}
+
+.vaultcast-section-header span {
+  color: var(--vaultcast-muted);
+  font-size: 12px;
+}
+
+.vaultcast-search {
+  width: 100%;
+  min-height: 34px;
+  margin: 10px 0;
+  border: 1px solid var(--vaultcast-line);
+  border-radius: var(--vaultcast-radius);
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vaultcast-track-item {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 42px;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px;
+  border-radius: var(--vaultcast-radius);
+  background: transparent;
+  color: var(--vaultcast-text);
+  text-align: left;
+}
+
+.vaultcast-track-item:hover,
+.vaultcast-track-item.is-active,
+.vaultcast-recent-item:hover {
+  background: color-mix(in srgb, var(--vaultcast-accent) 16%, transparent);
+}
+
+.vaultcast-track-marker {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vaultcast-accent) 18%, white);
+}
+
+.vaultcast-track-text {
+  min-width: 0;
+}
+
+.vaultcast-track-name {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vaultcast-track-meta,
+.vaultcast-track-progress {
+  color: var(--vaultcast-muted);
+  font-size: 11px;
+}
+
+.vaultcast-track-progress {
+  text-align: right;
+}
+
+.vaultcast-track-progress.is-completed {
+  display: inline-grid;
+  justify-self: end;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vaultcast-accent) 24%, white);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-track-progress.is-completed svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 3;
+}
+
+.vaultcast-empty {
+  padding: 16px 4px;
+  color: var(--vaultcast-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.vaultcast-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vaultcast-recent-item {
+  width: 100%;
+  min-height: 34px;
+  padding: 0 8px;
+  border-radius: var(--vaultcast-radius);
+  background: transparent;
+  color: var(--vaultcast-text);
+  font-size: 12px;
+}
+
+.vaultcast-recent-item span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vaultcast-recent-item span:last-child {
+  flex: 0 0 auto;
+  color: var(--vaultcast-muted);
+  font-variant-numeric: tabular-nums;
+}
