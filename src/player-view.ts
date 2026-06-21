@@ -156,7 +156,7 @@ export class VaultCastPlayerView extends ItemView {
       attr: { "aria-label": "Upload cover image" }
     });
     setIcon(uploadButton, "image-plus");
-    uploadButton.disabled = !this.currentTrack;
+    uploadButton.disabled = this.plugin.tracks.length === 0;
     uploadButton.addEventListener("click", () => coverInput.click());
     coverInput.addEventListener("change", () => {
       const [file] = Array.from(coverInput.files ?? []);
@@ -210,14 +210,16 @@ export class VaultCastPlayerView extends ItemView {
   }
 
   private async uploadCover(file: File): Promise<void> {
-    if (!this.currentTrack) {
-      new Notice("Play or select an audio file before uploading a cover.");
+    const targetTrack = this.currentTrack ?? this.plugin.tracks[0];
+    if (!targetTrack) {
+      new Notice("Add an audio file before uploading a cover.");
       return;
     }
 
     try {
-      const coverPath = await this.plugin.audioLibrary.saveCoverForTrack(this.currentTrack, file);
-      this.currentTrack.coverPath = coverPath;
+      const coverPath = await this.plugin.audioLibrary.saveCoverForTrack(targetTrack, file);
+      targetTrack.coverPath = coverPath;
+      this.currentTrack = targetTrack;
       this.plugin.refreshLibrary();
       new Notice("VaultCast cover image uploaded");
     } catch {
