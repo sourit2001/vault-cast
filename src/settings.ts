@@ -13,7 +13,7 @@ export class VaultCastSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("VaultCast")
+      .setName("General")
       .setHeading();
 
     new Setting(containerEl)
@@ -24,11 +24,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
           .setPlaceholder("Audio")
           .setValue(this.plugin.settings.audioFolder)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.audioFolder = value.trim() || "Audio";
-            await this.plugin.savePluginData();
-            this.plugin.refreshLibrary();
-            })();
+            void this.saveAndRefreshLibrary();
           });
       });
 
@@ -43,16 +40,14 @@ export class VaultCastSettingTab extends PluginSettingTab {
           dropdown.addOption(current, current);
         }
 
-        folders.forEach((folder) => dropdown.addOption(folder, folder));
+        folders.forEach((folder) => {
+          dropdown.addOption(folder, folder);
+        });
         dropdown
           .setValue(current)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.audioFolder = value;
-            await this.plugin.savePluginData();
-            this.plugin.refreshLibrary();
-            this.display();
-            })();
+            void this.saveAndRefreshLibrary();
           });
       });
 
@@ -66,12 +61,9 @@ export class VaultCastSettingTab extends PluginSettingTab {
         dropdown
           .setValue(String(this.plugin.settings.defaultSpeed))
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.defaultSpeed = Number(value);
             this.plugin.playbackStore.setSpeed(Number(value));
-            await this.plugin.savePluginData();
-            this.plugin.refreshActiveView();
-            })();
+            void this.saveAndRefreshActiveView();
           });
       });
 
@@ -82,10 +74,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
         toggle
           .setValue(this.plugin.settings.autoResume)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.autoResume = value;
-            await this.plugin.savePluginData();
-            })();
+            void this.plugin.savePluginData();
           });
       });
 
@@ -96,10 +86,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
         toggle
           .setValue(this.plugin.settings.autoScan)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.autoScan = value;
-            await this.plugin.savePluginData();
-            })();
+            void this.plugin.savePluginData();
           });
       });
 
@@ -113,11 +101,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
           .addOption("name", "Name")
           .setValue(this.plugin.settings.sortMethod)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.sortMethod = value as SortMethod;
-            await this.plugin.savePluginData();
-            this.plugin.refreshLibrary();
-            })();
+            void this.saveAndRefreshLibrary();
           });
       });
 
@@ -130,11 +115,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
           .addOption("asc", "Ascending")
           .setValue(this.plugin.settings.sortDirection)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.sortDirection = value as SortDirection;
-            await this.plugin.savePluginData();
-            this.plugin.refreshLibrary();
-            })();
+            void this.saveAndRefreshLibrary();
           });
       });
 
@@ -149,12 +131,9 @@ export class VaultCastSettingTab extends PluginSettingTab {
           .addOption("shuffle", "Shuffle")
           .setValue(this.plugin.settings.playbackMode)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.playbackMode = value as PlaybackMode;
             this.plugin.playbackStore.setPlaybackMode(value as PlaybackMode);
-            await this.plugin.savePluginData();
-            this.plugin.refreshActiveView();
-            })();
+            void this.saveAndRefreshActiveView();
           });
       });
 
@@ -162,15 +141,14 @@ export class VaultCastSettingTab extends PluginSettingTab {
       .setName("Theme")
       .setDesc("A simple seasonal skin for the player.")
       .addDropdown((dropdown) => {
-        THEME_OPTIONS.forEach((theme) => dropdown.addOption(theme.value, theme.label));
+        THEME_OPTIONS.forEach((theme) => {
+          dropdown.addOption(theme.value, theme.label);
+        });
         dropdown
           .setValue(this.plugin.settings.theme)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.theme = value as VaultCastTheme;
-            await this.plugin.savePluginData();
-            this.plugin.refreshActiveView();
-            })();
+            void this.saveAndRefreshActiveView();
           });
       });
 
@@ -182,14 +160,21 @@ export class VaultCastSettingTab extends PluginSettingTab {
           .setLimits(3, 20, 1)
           .setValue(this.plugin.settings.recentPlaysLimit)
           .onChange((value) => {
-            void (async () => {
             this.plugin.settings.recentPlaysLimit = value;
             this.plugin.trimRecentPlays();
-            await this.plugin.savePluginData();
-            this.plugin.refreshActiveView();
-            })();
+            void this.saveAndRefreshActiveView();
           });
       });
+  }
+
+  private async saveAndRefreshLibrary(): Promise<void> {
+    await this.plugin.savePluginData();
+    this.plugin.refreshLibrary();
+  }
+
+  private async saveAndRefreshActiveView(): Promise<void> {
+    await this.plugin.savePluginData();
+    this.plugin.refreshActiveView();
   }
 }
 
