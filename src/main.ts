@@ -144,8 +144,9 @@ export default class VaultCastPlugin extends Plugin {
     const isInAudioFolder = !folder || path === folder || path.startsWith(`${folder}/`);
     const isPotentialAudio = /\.(mp3|m4a|wav|flac|aac)$/.test(path);
     const isPotentialCover = /\.(png|jpe?g|webp|gif)$/.test(path);
+    const isPotentialNote = /\.md$/.test(path);
 
-    if (isInAudioFolder || isPotentialAudio || isPotentialCover) {
+    if (isInAudioFolder || isPotentialAudio || isPotentialCover || isPotentialNote) {
       this.refreshLibrary();
     }
   }

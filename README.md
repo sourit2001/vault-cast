@@ -18,6 +18,7 @@ It is designed for people who generate, download, or sync audio into their vault
 - Mark tracks as completed after listening
 - Recent plays list
 - Seasonal themes: Default, Spring, Summer, Autumn, and Winter
+- Open same-name Markdown notes for audio files
 - Mobile-friendly main-area player command
 
 Supported audio formats:
@@ -167,7 +168,6 @@ npm run dev
 - Per-track cover matching
 - Folder-specific playlists
 - Keyboard shortcuts
-- Link audio files to Markdown notes
 
 ## License
 

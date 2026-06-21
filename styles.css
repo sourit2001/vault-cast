@@ -214,6 +214,26 @@
   white-space: nowrap;
 }
 
+.vaultcast-note-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: var(--vaultcast-radius);
+  background: color-mix(in srgb, var(--vaultcast-accent) 18%, white);
+  color: var(--vaultcast-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.vaultcast-note-button svg {
+  width: 15px;
+  height: 15px;
+}
+
 .vaultcast-hero.has-cover .vaultcast-kicker,
 .vaultcast-hero.has-cover .vaultcast-track-title,
 .vaultcast-hero.has-cover .vaultcast-track-subtitle {
@@ -231,7 +251,8 @@
 }
 
 .vaultcast-hero.has-cover .vaultcast-icon-button,
-.vaultcast-hero.has-cover .vaultcast-latest-button {
+.vaultcast-hero.has-cover .vaultcast-latest-button,
+.vaultcast-hero.has-cover .vaultcast-note-button {
   background: rgba(255, 255, 255, 0.84);
   color: #1f1f1f;
 }
@@ -445,7 +466,7 @@
 
 .vaultcast-track-item {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 42px;
+  grid-template-columns: 30px minmax(0, 1fr) minmax(42px, auto);
   gap: 8px;
   align-items: center;
   width: 100%;
@@ -493,6 +514,33 @@
 
 .vaultcast-track-progress {
   text-align: right;
+}
+
+.vaultcast-track-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.vaultcast-track-note {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--vaultcast-muted);
+}
+
+.vaultcast-track-note:hover,
+.vaultcast-track-note:focus-visible {
+  background: color-mix(in srgb, var(--vaultcast-accent) 18%, transparent);
+  color: var(--vaultcast-text);
+}
+
+.vaultcast-track-note svg {
+  width: 14px;
+  height: 14px;
 }
 
 .vaultcast-track-progress.is-completed {

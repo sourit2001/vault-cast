@@ -75,7 +75,8 @@ export class AudioLibrary {
       extension: file.extension.toLowerCase(),
       createdTime: file.stat.ctime,
       modifiedTime: file.stat.mtime,
-      coverPath: findCoverPath(file, filesByPath)
+      coverPath: findCoverPath(file, filesByPath),
+      notePath: findNotePath(file, filesByPath)
     };
   }
 }
@@ -95,6 +96,12 @@ function findCoverPath(file: TFile, filesByPath: Map<string, TFile>): string | u
   ];
 
   return candidates.find((path) => filesByPath.has(path));
+}
+
+function findNotePath(file: TFile, filesByPath: Map<string, TFile>): string | undefined {
+  const folder = parentFolder(file.path);
+  const notePath = joinPath(folder, `${file.basename}.md`);
+  return filesByPath.has(notePath) ? notePath : undefined;
 }
 
 function parentFolder(path: string): string {

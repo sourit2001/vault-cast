@@ -30,6 +30,7 @@ export interface AudioTrack {
   modifiedTime: number;
   duration?: number;
   coverPath?: string;
+  notePath?: string;
 }
 
 export interface TrackPosition {

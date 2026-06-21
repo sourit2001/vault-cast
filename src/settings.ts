@@ -13,10 +13,6 @@ export class VaultCastSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("General")
-      .setHeading();
-
-    new Setting(containerEl)
       .setName("Audio folder")
       .setDesc("Folder inside this vault that contains your audio files. Use a vault-relative path, such as TTS Audio.")
       .addText((text) => {

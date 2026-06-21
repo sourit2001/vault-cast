@@ -197,6 +197,13 @@ export class VaultCastPlayerView extends ItemView {
       : `${this.plugin.tracks.length} audio file${this.plugin.tracks.length === 1 ? "" : "s"} found`;
     hero.createDiv({ cls: "vaultcast-track-subtitle", text: subtitle });
 
+    if (this.currentTrack?.notePath) {
+      const noteButton = hero.createEl("button", { cls: "vaultcast-note-button" });
+      setIcon(noteButton, "file-text");
+      noteButton.createSpan({ text: "Open note" });
+      noteButton.addEventListener("click", () => this.openNote(this.currentTrack));
+    }
+
     const latest = hero.createEl("button", { cls: "vaultcast-latest-button" });
     setIcon(latest, "sparkles");
     latest.createSpan({ text: "Play latest" });
@@ -299,22 +306,55 @@ export class VaultCastPlayerView extends ItemView {
     }
 
     tracks.forEach((track) => {
-      const item = list.createEl("button", { cls: "vaultcast-track-item" });
+      const item = list.createEl("div", {
+        cls: "vaultcast-track-item",
+        attr: { role: "button", tabindex: "0" }
+      });
       if (track.path === this.currentTrack?.path) {
         item.addClass("is-active");
       }
       item.addEventListener("click", () => this.playTrack(track));
+      item.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this.playTrack(track);
+        }
+      });
 
       const marker = item.createDiv({ cls: "vaultcast-track-marker" });
       setIcon(marker, track.path === this.currentTrack?.path ? "volume-2" : "music");
 
       const text = item.createDiv({ cls: "vaultcast-track-text" });
       text.createDiv({ cls: "vaultcast-track-name", text: track.title });
-      text.createDiv({ cls: "vaultcast-track-meta", text: formatDate(track.modifiedTime) });
+      text.createDiv({
+        cls: "vaultcast-track-meta",
+        text: track.notePath ? `${formatDate(track.modifiedTime)} · Note` : formatDate(track.modifiedTime)
+      });
 
       const progress = this.plugin.playbackStore.getProgress(track.path);
       const completed = this.plugin.playbackStore.isCompleted(track.path);
-      const status = item.createDiv({ cls: "vaultcast-track-progress" });
+      const actions = item.createDiv({ cls: "vaultcast-track-actions" });
+
+      if (track.notePath) {
+        const noteButton = actions.createEl("span", {
+          cls: "vaultcast-track-note",
+          attr: { "aria-label": "Open linked note", role: "button", tabindex: "0" }
+        });
+        setIcon(noteButton, "file-text");
+        noteButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.openNote(track);
+        });
+        noteButton.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            event.stopPropagation();
+            this.openNote(track);
+          }
+        });
+      }
+
+      const status = actions.createDiv({ cls: "vaultcast-track-progress" });
 
       if (completed) {
         status.addClass("is-completed");
@@ -323,6 +363,20 @@ export class VaultCastPlayerView extends ItemView {
         status.setText(progress > 0 ? `${Math.round(progress * 100)}%` : "");
       }
     });
+  }
+
+  private openNote(track: AudioTrack | null): void {
+    if (!track?.notePath) {
+      return;
+    }
+
+    const file = this.plugin.audioLibrary.getFile(track.notePath);
+    if (!file) {
+      new Notice(`VaultCast could not find ${track.notePath}`);
+      return;
+    }
+
+    void this.app.workspace.getLeaf(false).openFile(file);
   }
 
   private renderRecent(parent: HTMLElement): void {
