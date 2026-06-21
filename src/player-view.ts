@@ -14,6 +14,7 @@ export class VaultCastPlayerView extends ItemView {
   private searchQuery = "";
   private progressTimer: number | null = null;
   private lastSavedAt = 0;
+  private coverCacheKeys: Record<string, number> = {};
 
   constructor(leaf: WorkspaceLeaf, private readonly plugin: VaultCastPlugin) {
     super(leaf);
@@ -37,6 +38,7 @@ export class VaultCastPlayerView extends ItemView {
 
   async onOpen(): Promise<void> {
     this.bindAudioEvents();
+    this.restoreCurrentTrack();
     this.render();
   }
 
@@ -52,6 +54,7 @@ export class VaultCastPlayerView extends ItemView {
   }
 
   refresh(): void {
+    this.restoreCurrentTrack();
     this.render();
   }
 
@@ -107,9 +110,7 @@ export class VaultCastPlayerView extends ItemView {
 
   private render(): void {
     const container = this.contentEl;
-    const coverUrl = this.currentTrack
-      ? this.plugin.audioLibrary.getCoverResourcePath(this.currentTrack)
-      : null;
+    const coverUrl = this.currentTrack ? this.getCoverUrl(this.currentTrack) : null;
 
     container.empty();
     container.addClass("vaultcast-view");
@@ -164,6 +165,16 @@ export class VaultCastPlayerView extends ItemView {
       if (file) {
         void this.uploadCover(file);
       }
+    });
+
+    const resetThemeButton = topActions.createEl("button", {
+      cls: "vaultcast-icon-button",
+      attr: { "aria-label": "Reset to default skin" }
+    });
+    setIcon(resetThemeButton, "rotate-ccw");
+    resetThemeButton.disabled = this.plugin.settings.theme === "default";
+    resetThemeButton.addEventListener("click", () => {
+      void this.resetTheme();
     });
 
     const refreshButton = top.createEl("button", {
@@ -226,6 +237,7 @@ export class VaultCastPlayerView extends ItemView {
     try {
       const coverPath = await this.plugin.audioLibrary.saveCoverForTrack(targetTrack, file);
       targetTrack.coverPath = coverPath;
+      this.coverCacheKeys[coverPath] = Date.now();
       this.currentTrack = targetTrack;
       this.plugin.refreshLibrary();
       new Notice("VaultCast cover image uploaded");
@@ -377,6 +389,42 @@ export class VaultCastPlayerView extends ItemView {
     }
 
     void this.app.workspace.getLeaf(false).openFile(file);
+  }
+
+  private restoreCurrentTrack(): void {
+    if (this.currentTrack) {
+      const refreshedTrack = this.plugin.tracks.find((track) => track.path === this.currentTrack?.path);
+      if (refreshedTrack) {
+        this.currentTrack = refreshedTrack;
+        return;
+      }
+    }
+
+    const lastPlayedTrack = this.plugin.tracks.find((track) => {
+      return track.path === this.plugin.playbackStore.state.lastPlayedFile;
+    });
+    this.currentTrack = lastPlayedTrack ?? this.plugin.tracks[0] ?? null;
+  }
+
+  private getCoverUrl(track: AudioTrack): string | null {
+    const coverUrl = this.plugin.audioLibrary.getCoverResourcePath(track);
+    if (!coverUrl || !track.coverPath) {
+      return coverUrl;
+    }
+
+    const coverFile = this.plugin.audioLibrary.getFile(track.coverPath);
+    const cacheKey = this.coverCacheKeys[track.coverPath] ?? coverFile?.stat.mtime ?? 0;
+    return cacheKey > 0 ? `${coverUrl}${coverUrl.includes("?") ? "&" : "?"}v=${cacheKey}` : coverUrl;
+  }
+
+  private async resetTheme(): Promise<void> {
+    if (this.plugin.settings.theme === "default") {
+      return;
+    }
+
+    this.plugin.settings.theme = "default";
+    await this.plugin.savePluginData();
+    this.render();
   }
 
   private renderRecent(parent: HTMLElement): void {
