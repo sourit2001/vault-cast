@@ -1,3 +1,23 @@
+# VaultCast 0.1.2
+
+Clean release tag for Obsidian community plugin review.
+
+## Fixes
+
+- Publishes the current reviewed code under a fresh `0.1.2` release to avoid stale release/tag cache issues.
+- Keeps settings page review fixes from `0.1.1`.
+- Includes improved linked-note matching for generated audio filenames.
+
+## Release Assets
+
+Attach these files to the GitHub release tagged `0.1.2`:
+
+- `manifest.json`
+- `main.js`
+- `styles.css`
+
+---
+
 # VaultCast 0.1.1
 
 Review fix release for Obsidian community plugin submission.

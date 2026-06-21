@@ -1,7 +1,7 @@
 {
   "id": "vaultcast",
   "name": "VaultCast",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "minAppVersion": "1.5.0",
   "description": "A cute private podcast player for local audio files in your vault.",
   "author": "Li Zhu",

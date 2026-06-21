@@ -100,8 +100,31 @@ function findCoverPath(file: TFile, filesByPath: Map<string, TFile>): string | u
 
 function findNotePath(file: TFile, filesByPath: Map<string, TFile>): string | undefined {
   const folder = parentFolder(file.path);
-  const notePath = joinPath(folder, `${file.basename}.md`);
-  return filesByPath.has(notePath) ? notePath : undefined;
+  const sameFolderNotePath = joinPath(folder, `${file.basename}.md`);
+  if (filesByPath.has(sameFolderNotePath)) {
+    return sameFolderNotePath;
+  }
+
+  const noteFiles = Array.from(filesByPath.values()).filter((candidate) => candidate.extension.toLowerCase() === "md");
+  const exactMatch = noteFiles.find((candidate) => candidate.basename === file.basename);
+  if (exactMatch) {
+    return exactMatch.path;
+  }
+
+  const readableTitle = stripGeneratedTimestamp(file.basename);
+  const strippedMatch = noteFiles.find((candidate) => candidate.basename === readableTitle);
+  if (strippedMatch) {
+    return strippedMatch.path;
+  }
+
+  const prefixMatches = noteFiles.filter((candidate) => {
+    return readableTitle.length >= 12 && candidate.basename.startsWith(readableTitle);
+  });
+  return prefixMatches.length === 1 ? prefixMatches[0].path : undefined;
+}
+
+function stripGeneratedTimestamp(name: string): string {
+  return name.replace(/-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/, "");
 }
 
 function parentFolder(path: string): string {
