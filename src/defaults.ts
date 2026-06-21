@@ -1,7 +1,7 @@
 import { PlaybackState, VaultCastSettings } from "./types";
 
 export const DEFAULT_SETTINGS: VaultCastSettings = {
-  audioFolder: "TTS Audio",
+  audioFolder: "Audio",
   defaultSpeed: 1.5,
   autoResume: true,
   autoScan: true,

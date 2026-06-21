@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "A private podcast player for local audio files in Obsidian.",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourit2001/vault-cast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sourit2001/vault-cast/issues"
+  },
+  "homepage": "https://github.com/sourit2001/vault-cast#readme",
   "scripts": {
     "dev": "node esbuild.config.mjs --watch",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"

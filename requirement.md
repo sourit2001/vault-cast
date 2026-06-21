@@ -95,10 +95,10 @@ Podcasts/
 TTS/
 ```
 
-Default folder for this vault:
+Default folder:
 
 ```text
-TTS Audio/
+Audio/
 ```
 
 ---
@@ -128,7 +128,7 @@ Requirements:
 
 Default behavior:
 
-- Audio folder: `TTS Audio`
+- Audio folder: `Audio`
 - Sort method: `Modified Time DESC`
 - Newest audio appears first.
 
@@ -423,7 +423,7 @@ Settings
 Settings:
 
 - Audio Folder
-  - Default: `TTS Audio`
+  - Default: `Audio`
 - Default Speed
   - Default: `1.5x`
 - Auto Resume
@@ -504,7 +504,7 @@ styles.css
 
 ```json
 {
-  "audioFolder": "TTS Audio",
+  "audioFolder": "Audio",
   "defaultSpeed": 1.5,
   "autoResume": true,
   "autoScan": true,
