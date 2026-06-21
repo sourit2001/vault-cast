@@ -28,24 +28,24 @@ export default class VaultCastPlugin extends Plugin {
     });
 
     this.addCommand({
-      id: "open-vaultcast-player",
-      name: "Open VaultCast player",
+      id: "open-player",
+      name: "Open player",
       callback: () => {
         void this.activateView(Platform.isMobile);
       }
     });
 
     this.addCommand({
-      id: "open-vaultcast-player-main",
-      name: "Open VaultCast player in main area",
+      id: "open-player-main",
+      name: "Open player in main area",
       callback: () => {
         void this.activateView(true);
       }
     });
 
     this.addCommand({
-      id: "refresh-vaultcast-library",
-      name: "Refresh VaultCast library",
+      id: "refresh-library",
+      name: "Refresh library",
       callback: () => {
         this.refreshLibrary();
         new Notice("VaultCast playlist refreshed");
@@ -60,10 +60,6 @@ export default class VaultCastPlugin extends Plugin {
     this.addSettingTab(new VaultCastSettingTab(this.app, this));
   }
 
-  onunload(): void {
-    this.app.workspace.detachLeavesOfType(VAULTCAST_VIEW_TYPE);
-  }
-
   async activateView(openInMainArea = false): Promise<void> {
     if (openInMainArea) {
       const leaf = this.app.workspace.getLeaf(true);
@@ -71,7 +67,7 @@ export default class VaultCastPlugin extends Plugin {
         type: VAULTCAST_VIEW_TYPE,
         active: true
       });
-      this.app.workspace.revealLeaf(leaf);
+      this.app.workspace.setActiveLeaf(leaf, { focus: true });
       return;
     }
 
@@ -86,7 +82,7 @@ export default class VaultCastPlugin extends Plugin {
       });
     }
 
-    this.app.workspace.revealLeaf(leaf);
+    this.app.workspace.setActiveLeaf(leaf, { focus: true });
   }
 
   refreshLibrary(): void {
@@ -147,8 +143,9 @@ export default class VaultCastPlugin extends Plugin {
     const folder = this.settings.audioFolder.trim().replace(/^\/+|\/+$/g, "").toLowerCase();
     const isInAudioFolder = !folder || path === folder || path.startsWith(`${folder}/`);
     const isPotentialAudio = /\.(mp3|m4a|wav|flac|aac)$/.test(path);
+    const isPotentialCover = /\.(png|jpe?g|webp|gif)$/.test(path);
 
-    if (isInAudioFolder || isPotentialAudio) {
+    if (isInAudioFolder || isPotentialAudio || isPotentialCover) {
       this.refreshLibrary();
     }
   }

@@ -1,9 +1,9 @@
 {
   "id": "vaultcast",
   "name": "VaultCast",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.5.0",
-  "description": "A cute private podcast player for local audio files in your Obsidian vault.",
+  "description": "A cute private podcast player for local audio files in your vault.",
   "author": "Li Zhu",
   "authorUrl": "https://github.com/sourit2001",
   "isDesktopOnly": false

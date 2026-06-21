@@ -17,6 +17,18 @@
   color: var(--vaultcast-text);
 }
 
+.vaultcast-view.has-cover-image {
+  --vaultcast-panel: rgba(18, 18, 18, 0.48);
+  --vaultcast-panel-strong: rgba(255, 255, 255, 0.78);
+  --vaultcast-text: #fff;
+  --vaultcast-muted: rgba(255, 255, 255, 0.78);
+  --vaultcast-line: rgba(255, 255, 255, 0.18);
+  --vaultcast-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.42)),
+    var(--vaultcast-cover-image) center / cover no-repeat;
+}
+
 .vaultcast-theme-spring {
   --vaultcast-bg: #fbfff8;
   --vaultcast-text: #26352a;
@@ -71,7 +83,7 @@
 }
 
 .is-mobile .vaultcast-art {
-  min-height: 168px;
+  min-height: 150px;
 }
 
 .is-mobile .vaultcast-track-title {
@@ -101,6 +113,10 @@
   padding: 12px;
 }
 
+.vaultcast-hero.has-cover {
+  color: #fff;
+}
+
 .vaultcast-hero-top,
 .vaultcast-time-row,
 .vaultcast-section-header,
@@ -109,6 +125,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.vaultcast-hero-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.vaultcast-cover-input {
+  display: none;
 }
 
 .vaultcast-kicker {
@@ -124,7 +150,8 @@
 .vaultcast-art {
   position: relative;
   display: grid;
-  min-height: 112px;
+  min-height: 132px;
+  aspect-ratio: 16 / 8.5;
   place-items: center;
   overflow: hidden;
   border-radius: var(--vaultcast-radius);
@@ -132,6 +159,12 @@
     radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--vaultcast-accent-2) 52%, transparent), transparent 32%),
     radial-gradient(circle at 82% 14%, color-mix(in srgb, var(--vaultcast-accent) 42%, transparent), transparent 34%),
     linear-gradient(135deg, color-mix(in srgb, var(--vaultcast-accent) 72%, white), color-mix(in srgb, var(--vaultcast-accent-2) 68%, white));
+}
+
+.vaultcast-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .vaultcast-art-icon {
@@ -181,6 +214,50 @@
   white-space: nowrap;
 }
 
+.vaultcast-hero.has-cover .vaultcast-kicker,
+.vaultcast-hero.has-cover .vaultcast-track-title,
+.vaultcast-hero.has-cover .vaultcast-track-subtitle {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.42);
+}
+
+.vaultcast-hero.has-cover .vaultcast-track-subtitle {
+  opacity: 0.84;
+}
+
+.vaultcast-hero.has-cover .vaultcast-art {
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
+}
+
+.vaultcast-hero.has-cover .vaultcast-icon-button,
+.vaultcast-hero.has-cover .vaultcast-latest-button {
+  background: rgba(255, 255, 255, 0.84);
+  color: #1f1f1f;
+}
+
+.vaultcast-view.has-cover-image .vaultcast-controls,
+.vaultcast-view.has-cover-image .vaultcast-section {
+  color: #fff;
+}
+
+.vaultcast-view.has-cover-image .vaultcast-track-item,
+.vaultcast-view.has-cover-image .vaultcast-recent-item {
+  color: #fff;
+}
+
+.vaultcast-view.has-cover-image .vaultcast-pill-button,
+.vaultcast-view.has-cover-image .vaultcast-volume,
+.vaultcast-view.has-cover-image .vaultcast-search {
+  background: rgba(255, 255, 255, 0.78);
+  color: #1f1f1f;
+}
+
+.vaultcast-view.has-cover-image .vaultcast-select {
+  background: rgba(255, 255, 255, 0.86);
+  color: #1f1f1f;
+}
+
 .vaultcast-latest-button,
 .vaultcast-pill-button,
 .vaultcast-icon-button,
@@ -209,6 +286,11 @@
   opacity: 0.48;
 }
 
+.vaultcast-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .vaultcast-controls {
   padding: 12px;
 }
@@ -219,11 +301,11 @@
   font-variant-numeric: tabular-nums;
 }
 
-.vaultcast-progress {
+.vaultcast-view input.vaultcast-progress {
   display: block;
-  width: 100% !important;
+  width: 100%;
   min-width: 100%;
-  max-width: 100% !important;
+  max-width: 100%;
   margin: 8px 0 4px;
   accent-color: var(--vaultcast-accent);
 }
@@ -299,11 +381,11 @@
   font-weight: 650;
 }
 
-.vaultcast-volume input {
+.vaultcast-view .vaultcast-volume input {
   flex: 1;
-  width: 100% !important;
+  width: 100%;
   min-width: 0;
-  max-width: 100% !important;
+  max-width: 100%;
   accent-color: var(--vaultcast-accent);
 }
 

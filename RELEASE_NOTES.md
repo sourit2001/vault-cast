@@ -1,3 +1,29 @@
+# VaultCast 0.1.1
+
+Review fix release for Obsidian community plugin submission.
+
+## Fixes
+
+- Removed redundant wording from the plugin description.
+- Stopped detaching leaves during plugin unload.
+- Replaced newer workspace APIs with APIs supported by the declared minimum app version.
+- Updated command IDs and names to follow plugin review conventions.
+- Updated settings heading usage to match platform UI conventions.
+- Removed deprecated slider tooltip usage.
+- Removed unnecessary type assertions and promise-returning event handlers.
+- Replaced the `builtin-modules` dependency with Node's built-in module list.
+- Removed CSS `!important` usage.
+
+## Release Assets
+
+Attach these files to the GitHub release tagged `0.1.1`:
+
+- `manifest.json`
+- `main.js`
+- `styles.css`
+
+---
+
 # VaultCast 0.1.0
 
 Initial public beta release.

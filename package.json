@@ -1,6 +1,6 @@
 {
   "name": "vaultcast",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A private podcast player for local audio files in Obsidian.",
   "main": "main.js",
   "repository": {
@@ -25,7 +25,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.14.10",
-    "builtin-modules": "^3.3.0",
     "esbuild": "^0.23.0",
     "obsidian": "^1.5.12",
     "typescript": "^5.5.3"

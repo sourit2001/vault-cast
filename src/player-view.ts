@@ -106,7 +106,11 @@ export class VaultCastPlayerView extends ItemView {
   }
 
   private render(): void {
-    const container = this.containerEl.children[1] as HTMLElement;
+    const container = this.contentEl;
+    const coverUrl = this.currentTrack
+      ? this.plugin.audioLibrary.getCoverResourcePath(this.currentTrack)
+      : null;
+
     container.empty();
     container.addClass("vaultcast-view");
     container.removeClass(
@@ -114,21 +118,53 @@ export class VaultCastPlayerView extends ItemView {
       "vaultcast-theme-spring",
       "vaultcast-theme-summer",
       "vaultcast-theme-autumn",
-      "vaultcast-theme-winter"
+      "vaultcast-theme-winter",
+      "has-cover-image"
     );
     container.addClass(themeClass(this.plugin.settings.theme));
+    if (coverUrl) {
+      container.addClass("has-cover-image");
+      container.style.setProperty("--vaultcast-cover-image", `url("${coverUrl.replace(/"/g, '\\"')}")`);
+    } else {
+      container.style.removeProperty("--vaultcast-cover-image");
+    }
 
     const shell = container.createDiv({ cls: "vaultcast-shell" });
-    this.renderHero(shell);
+    this.renderHero(shell, coverUrl);
     this.renderControls(shell);
     this.renderPlaylist(shell);
     this.renderRecent(shell);
   }
 
-  private renderHero(parent: HTMLElement): void {
-    const hero = parent.createDiv({ cls: "vaultcast-hero" });
+  private renderHero(parent: HTMLElement, coverUrl: string | null): void {
+    const hero = parent.createDiv({ cls: coverUrl ? "vaultcast-hero has-cover" : "vaultcast-hero" });
     const top = hero.createDiv({ cls: "vaultcast-hero-top" });
     top.createDiv({ cls: "vaultcast-kicker", text: themeLabel(this.plugin.settings.theme) });
+
+    const topActions = top.createDiv({ cls: "vaultcast-hero-actions" });
+    const coverInput = topActions.createEl("input", {
+      cls: "vaultcast-cover-input",
+      attr: {
+        type: "file",
+        accept: "image/png,image/jpeg,image/webp,image/gif",
+        "aria-label": "Upload cover image"
+      }
+    });
+
+    const uploadButton = topActions.createEl("button", {
+      cls: "vaultcast-icon-button",
+      attr: { "aria-label": "Upload cover image" }
+    });
+    setIcon(uploadButton, "image-plus");
+    uploadButton.disabled = !this.currentTrack;
+    uploadButton.addEventListener("click", () => coverInput.click());
+    coverInput.addEventListener("change", () => {
+      const [file] = Array.from(coverInput.files ?? []);
+      coverInput.value = "";
+      if (file) {
+        void this.uploadCover(file);
+      }
+    });
 
     const refreshButton = top.createEl("button", {
       cls: "vaultcast-icon-button",
@@ -136,11 +172,22 @@ export class VaultCastPlayerView extends ItemView {
     });
     setIcon(refreshButton, "refresh-cw");
     refreshButton.addEventListener("click", () => this.plugin.refreshLibrary());
+    topActions.appendChild(refreshButton);
 
     const art = hero.createDiv({ cls: "vaultcast-art" });
-    const artIcon = art.createDiv({ cls: "vaultcast-art-icon" });
-    setIcon(artIcon, "headphones");
-    art.createDiv({ cls: "vaultcast-art-orbit" });
+    if (coverUrl) {
+      art.createEl("img", {
+        cls: "vaultcast-cover-image",
+        attr: {
+          src: coverUrl,
+          alt: this.currentTrack?.title ?? "VaultCast cover"
+        }
+      });
+    } else {
+      const artIcon = art.createDiv({ cls: "vaultcast-art-icon" });
+      setIcon(artIcon, "headphones");
+      art.createDiv({ cls: "vaultcast-art-orbit" });
+    }
 
     const title = this.currentTrack?.title ?? "Ready for today's audio";
     hero.createEl("h3", { cls: "vaultcast-track-title", text: title });
@@ -160,6 +207,22 @@ export class VaultCastPlayerView extends ItemView {
         this.playTrack(track);
       }
     });
+  }
+
+  private async uploadCover(file: File): Promise<void> {
+    if (!this.currentTrack) {
+      new Notice("Play or select an audio file before uploading a cover.");
+      return;
+    }
+
+    try {
+      const coverPath = await this.plugin.audioLibrary.saveCoverForTrack(this.currentTrack, file);
+      this.currentTrack.coverPath = coverPath;
+      this.plugin.refreshLibrary();
+      new Notice("VaultCast cover image uploaded");
+    } catch {
+      new Notice("VaultCast could not upload that image. Use PNG, JPG, WEBP, or GIF.");
+    }
   }
 
   private renderControls(parent: HTMLElement): void {
@@ -188,7 +251,7 @@ export class VaultCastPlayerView extends ItemView {
         max: "1000",
         value: String(this.progressValue())
       }
-    }) as HTMLInputElement;
+    });
     progress.disabled = !this.currentTrack;
     progress.addEventListener("input", () => {
       const duration = Number.isFinite(this.audio.duration) ? this.audio.duration : 0;
@@ -216,7 +279,7 @@ export class VaultCastPlayerView extends ItemView {
         placeholder: "Search audio",
         value: this.searchQuery
       }
-    }) as HTMLInputElement;
+    });
     search.addEventListener("input", () => {
       this.searchQuery = search.value;
       this.render();
@@ -287,18 +350,20 @@ export class VaultCastPlayerView extends ItemView {
     const button = parent.createEl("button", { cls: "vaultcast-pill-button" });
     setIcon(button, modeIcon(this.plugin.playbackStore.state.playbackMode));
     button.createSpan({ text: modeLabel(this.plugin.playbackStore.state.playbackMode) });
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
+      void (async () => {
       const current = this.plugin.playbackStore.state.playbackMode;
       const next = MODES[(MODES.indexOf(current) + 1) % MODES.length];
       this.plugin.settings.playbackMode = next;
       this.plugin.playbackStore.setPlaybackMode(next);
       await this.plugin.savePluginData();
       this.render();
+      })();
     });
   }
 
   private renderSpeedSelect(parent: HTMLElement): void {
-    const select = parent.createEl("select", { cls: "vaultcast-select" }) as HTMLSelectElement;
+    const select = parent.createEl("select", { cls: "vaultcast-select" });
     SPEEDS.forEach((speed) => {
       select.createEl("option", {
         text: `${speed}x`,
@@ -306,11 +371,13 @@ export class VaultCastPlayerView extends ItemView {
       });
     });
     select.value = String(this.plugin.playbackStore.state.playbackSpeed);
-    select.addEventListener("change", async () => {
+    select.addEventListener("change", () => {
+      void (async () => {
       const speed = Number(select.value);
       this.audio.playbackRate = speed;
       this.plugin.playbackStore.setSpeed(speed);
       await this.plugin.savePluginData();
+      })();
     });
   }
 
@@ -326,12 +393,14 @@ export class VaultCastPlayerView extends ItemView {
         step: "0.05",
         value: String(this.plugin.playbackStore.state.volume)
       }
-    }) as HTMLInputElement;
-    volume.addEventListener("input", async () => {
+    });
+    volume.addEventListener("input", () => {
+      void (async () => {
       const value = Number(volume.value);
       this.audio.volume = value;
       this.plugin.playbackStore.setVolume(value);
       await this.plugin.savePluginData();
+      })();
     });
   }
 
@@ -463,7 +532,7 @@ export class VaultCastPlayerView extends ItemView {
     const root = this.containerEl;
     const current = root.querySelector(".vaultcast-current-time");
     const duration = root.querySelector(".vaultcast-duration");
-    const progress = root.querySelector(".vaultcast-progress") as HTMLInputElement | null;
+    const progress = root.querySelector<HTMLInputElement>(".vaultcast-progress");
 
     if (current) {
       current.textContent = formatTime(this.audio.currentTime);

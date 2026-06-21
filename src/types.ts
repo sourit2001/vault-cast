@@ -1,6 +1,8 @@
 export const AUDIO_EXTENSIONS = ["mp3", "m4a", "wav", "flac", "aac"] as const;
+export const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "gif"] as const;
 
 export type AudioExtension = (typeof AUDIO_EXTENSIONS)[number];
+export type ImageExtension = (typeof IMAGE_EXTENSIONS)[number];
 
 export type SortMethod = "name" | "createdTime" | "modifiedTime";
 export type SortDirection = "asc" | "desc";
@@ -27,6 +29,7 @@ export interface AudioTrack {
   createdTime: number;
   modifiedTime: number;
   duration?: number;
+  coverPath?: string;
 }
 
 export interface TrackPosition {
