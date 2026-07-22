@@ -90,6 +90,11 @@
   font-size: 22px;
 }
 
+.is-mobile .vaultcast-hero-top {
+  top: max(96px, calc(env(safe-area-inset-top, 0px) + 64px));
+  right: 16px;
+}
+
 .is-mobile .vaultcast-controls,
 .is-mobile .vaultcast-section,
 .is-mobile .vaultcast-hero {
