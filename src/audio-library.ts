@@ -2,6 +2,7 @@ import { App, TFile } from "obsidian";
 import { AUDIO_EXTENSIONS, AudioTrack, IMAGE_EXTENSIONS, SortDirection, SortMethod } from "./types";
 
 const FOLDER_COVER_NAMES = ["cover", "folder", "album", "artwork"];
+const BACKGROUND_FOLDER = "VaultCast";
 
 export class AudioLibrary {
   constructor(private readonly app: App) {}
@@ -36,6 +37,32 @@ export class AudioLibrary {
     return file instanceof TFile ? this.app.vault.getResourcePath(file) : null;
   }
 
+  getImageResourcePath(path: string): string | null {
+    const file = this.getFile(path);
+    return file ? this.app.vault.getResourcePath(file) : null;
+  }
+
+  async saveBackgroundImage(source: File): Promise<string> {
+    const extension = imageExtension(source);
+    if (!extension) {
+      throw new Error("Unsupported image type");
+    }
+
+    await this.ensureBackgroundFolder();
+
+    const backgroundPath = joinPath(BACKGROUND_FOLDER, `background.${extension}`);
+    const existing = this.app.vault.getAbstractFileByPath(backgroundPath);
+    const data = await source.arrayBuffer();
+
+    if (existing instanceof TFile) {
+      await this.app.vault.modifyBinary(existing, data);
+    } else {
+      await this.app.vault.createBinary(backgroundPath, data);
+    }
+
+    return backgroundPath;
+  }
+
   async saveCoverForTrack(track: AudioTrack, source: File): Promise<string> {
     const extension = imageExtension(source);
     if (!extension) {
@@ -53,6 +80,12 @@ export class AudioLibrary {
     }
 
     return coverPath;
+  }
+
+  private async ensureBackgroundFolder(): Promise<void> {
+    if (!this.app.vault.getAbstractFileByPath(BACKGROUND_FOLDER)) {
+      await this.app.vault.createFolder(BACKGROUND_FOLDER);
+    }
   }
 
   private isAudioInFolder(file: TFile, audioFolder: string): boolean {

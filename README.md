@@ -18,6 +18,7 @@ It is designed for people who generate, download, or sync audio into their vault
 - Mark tracks as completed after listening
 - Recent plays list
 - Seasonal themes: Default, Spring, Summer, Autumn, and Winter
+- Global player background image
 - Open same-name Markdown notes for audio files
 - Mobile-friendly main-area player command
 

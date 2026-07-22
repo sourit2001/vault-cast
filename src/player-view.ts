@@ -1,6 +1,6 @@
-import { ItemView, Notice, WorkspaceLeaf, setIcon } from "obsidian";
+import { ItemView, Modal, Notice, WorkspaceLeaf, setIcon } from "obsidian";
 import type VaultCastPlugin from "./main";
-import { themeClass, themeLabel } from "./theme";
+import { themeClass } from "./theme";
 import { AudioTrack, PlaybackMode } from "./types";
 
 export const VAULTCAST_VIEW_TYPE = "vaultcast-player-view";
@@ -14,7 +14,7 @@ export class VaultCastPlayerView extends ItemView {
   private searchQuery = "";
   private progressTimer: number | null = null;
   private lastSavedAt = 0;
-  private coverCacheKeys: Record<string, number> = {};
+  private backgroundCacheKeys: Record<string, number> = {};
 
   constructor(leaf: WorkspaceLeaf, private readonly plugin: VaultCastPlugin) {
     super(leaf);
@@ -110,7 +110,7 @@ export class VaultCastPlayerView extends ItemView {
 
   private render(): void {
     const container = this.contentEl;
-    const coverUrl = this.currentTrack ? this.getCoverUrl(this.currentTrack) : null;
+    const coverUrl = this.getBackgroundUrl();
 
     container.empty();
     container.addClass("vaultcast-view");
@@ -140,7 +140,6 @@ export class VaultCastPlayerView extends ItemView {
   private renderHero(parent: HTMLElement, coverUrl: string | null): void {
     const hero = parent.createDiv({ cls: coverUrl ? "vaultcast-hero has-cover" : "vaultcast-hero" });
     const top = hero.createDiv({ cls: "vaultcast-hero-top" });
-    top.createDiv({ cls: "vaultcast-kicker", text: themeLabel(this.plugin.settings.theme) });
 
     const topActions = top.createDiv({ cls: "vaultcast-hero-actions" });
     const coverInput = topActions.createEl("input", {
@@ -148,13 +147,13 @@ export class VaultCastPlayerView extends ItemView {
       attr: {
         type: "file",
         accept: "image/png,image/jpeg,image/webp,image/gif",
-        "aria-label": "Upload cover image"
+        "aria-label": "Upload background image"
       }
     });
 
     const uploadButton = topActions.createEl("button", {
       cls: "vaultcast-icon-button",
-      attr: { "aria-label": "Upload cover image" }
+      attr: { "aria-label": "Upload background image" }
     });
     setIcon(uploadButton, "image-plus");
     uploadButton.disabled = this.plugin.tracks.length === 0;
@@ -163,27 +162,9 @@ export class VaultCastPlayerView extends ItemView {
       const [file] = Array.from(coverInput.files ?? []);
       coverInput.value = "";
       if (file) {
-        void this.uploadCover(file);
+        void this.cropAndUploadBackground(file);
       }
     });
-
-    const resetThemeButton = topActions.createEl("button", {
-      cls: "vaultcast-icon-button",
-      attr: { "aria-label": "Reset to default skin" }
-    });
-    setIcon(resetThemeButton, "rotate-ccw");
-    resetThemeButton.disabled = this.plugin.settings.theme === "default";
-    resetThemeButton.addEventListener("click", () => {
-      void this.resetTheme();
-    });
-
-    const refreshButton = top.createEl("button", {
-      cls: "vaultcast-icon-button",
-      attr: { "aria-label": "Refresh playlist" }
-    });
-    setIcon(refreshButton, "refresh-cw");
-    refreshButton.addEventListener("click", () => this.plugin.refreshLibrary());
-    topActions.appendChild(refreshButton);
 
     const art = hero.createDiv({ cls: "vaultcast-art" });
     if (coverUrl) {
@@ -203,10 +184,12 @@ export class VaultCastPlayerView extends ItemView {
     const title = this.currentTrack?.title ?? "Ready for today's audio";
     hero.createEl("h3", { cls: "vaultcast-track-title", text: title });
 
-    const subtitle = this.currentTrack
-      ? this.currentTrack.path
-      : `${this.plugin.tracks.length} audio file${this.plugin.tracks.length === 1 ? "" : "s"} found`;
-    hero.createDiv({ cls: "vaultcast-track-subtitle", text: subtitle });
+    if (!this.currentTrack) {
+      hero.createDiv({
+        cls: "vaultcast-track-subtitle",
+        text: `${this.plugin.tracks.length} audio file${this.plugin.tracks.length === 1 ? "" : "s"} found`
+      });
+    }
 
     if (this.currentTrack?.notePath) {
       const noteButton = hero.createEl("button", { cls: "vaultcast-note-button" });
@@ -227,20 +210,24 @@ export class VaultCastPlayerView extends ItemView {
     });
   }
 
-  private async uploadCover(file: File): Promise<void> {
-    const targetTrack = this.currentTrack ?? this.plugin.tracks[0];
-    if (!targetTrack) {
-      new Notice("Add an audio file before uploading a cover.");
-      return;
-    }
+  private async cropAndUploadBackground(file: File): Promise<void> {
+    const croppedFile = await new Promise<File | null>((resolve) => {
+      new CoverCropModal(this.app, file, resolve).open();
+    });
 
+    if (croppedFile) {
+      await this.uploadBackground(croppedFile);
+    }
+  }
+
+  private async uploadBackground(file: File): Promise<void> {
     try {
-      const coverPath = await this.plugin.audioLibrary.saveCoverForTrack(targetTrack, file);
-      targetTrack.coverPath = coverPath;
-      this.coverCacheKeys[coverPath] = Date.now();
-      this.currentTrack = targetTrack;
-      this.plugin.refreshLibrary();
-      new Notice("VaultCast cover image uploaded");
+      const backgroundPath = await this.plugin.audioLibrary.saveBackgroundImage(file);
+      this.plugin.settings.backgroundPath = backgroundPath;
+      this.backgroundCacheKeys[backgroundPath] = Date.now();
+      await this.plugin.savePluginData();
+      this.render();
+      new Notice("VaultCast background image updated");
     } catch {
       new Notice("VaultCast could not upload that image. Use PNG, JPG, WEBP, or GIF.");
     }
@@ -406,25 +393,20 @@ export class VaultCastPlayerView extends ItemView {
     this.currentTrack = lastPlayedTrack ?? this.plugin.tracks[0] ?? null;
   }
 
-  private getCoverUrl(track: AudioTrack): string | null {
-    const coverUrl = this.plugin.audioLibrary.getCoverResourcePath(track);
-    if (!coverUrl || !track.coverPath) {
-      return coverUrl;
+  private getBackgroundUrl(): string | null {
+    const backgroundPath = this.plugin.settings.backgroundPath;
+    if (!backgroundPath) {
+      return null;
     }
 
-    const coverFile = this.plugin.audioLibrary.getFile(track.coverPath);
-    const cacheKey = this.coverCacheKeys[track.coverPath] ?? coverFile?.stat.mtime ?? 0;
-    return cacheKey > 0 ? `${coverUrl}${coverUrl.includes("?") ? "&" : "?"}v=${cacheKey}` : coverUrl;
-  }
-
-  private async resetTheme(): Promise<void> {
-    if (this.plugin.settings.theme === "default") {
-      return;
+    const backgroundUrl = this.plugin.audioLibrary.getImageResourcePath(backgroundPath);
+    if (!backgroundUrl) {
+      return null;
     }
 
-    this.plugin.settings.theme = "default";
-    await this.plugin.savePluginData();
-    this.render();
+    const backgroundFile = this.plugin.audioLibrary.getFile(backgroundPath);
+    const cacheKey = this.backgroundCacheKeys[backgroundPath] ?? backgroundFile?.stat.mtime ?? 0;
+    return cacheKey > 0 ? `${backgroundUrl}${backgroundUrl.includes("?") ? "&" : "?"}v=${cacheKey}` : backgroundUrl;
   }
 
   private renderRecent(parent: HTMLElement): void {
@@ -650,6 +632,185 @@ export class VaultCastPlayerView extends ItemView {
   }
 }
 
+class CoverCropModal extends Modal {
+  private readonly image = new Image();
+  private readonly sourceUrl: string;
+  private zoom = 1;
+  private positionX = 0;
+  private positionY = 0;
+  private preview: HTMLElement | null = null;
+  private previewImage: HTMLImageElement | null = null;
+  private dragging = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private dragStartPositionX = 0;
+  private dragStartPositionY = 0;
+  private settled = false;
+
+  constructor(
+    app: VaultCastPlayerView["app"],
+    private readonly source: File,
+    private readonly resolve: (file: File | null) => void
+  ) {
+    super(app);
+    this.sourceUrl = URL.createObjectURL(source);
+  }
+
+  onOpen(): void {
+    this.setTitle("Crop cover image");
+    this.modalEl.addClass("vaultcast-crop-modal");
+    this.contentEl.empty();
+
+    this.preview = this.contentEl.createDiv({ cls: "vaultcast-crop-preview" });
+    this.previewImage = this.preview.createEl("img", {
+      cls: "vaultcast-crop-image",
+      attr: { src: this.sourceUrl, alt: "Cover crop preview", draggable: "false" }
+    });
+    this.preview.createDiv({ cls: "vaultcast-crop-guide" });
+
+    const hint = this.contentEl.createDiv({
+      cls: "vaultcast-crop-hint",
+      text: "Drag the image to reposition it"
+    });
+    setIcon(hint.createSpan(), "move");
+
+    this.createRange("Zoom", 100, 250, 100, (value) => {
+      this.zoom = value / 100;
+      this.updatePreview();
+    });
+    this.createRange("Horizontal", -100, 100, 0, (value) => {
+      this.positionX = value / 100;
+      this.updatePreview();
+    });
+    this.createRange("Vertical", -100, 100, 0, (value) => {
+      this.positionY = value / 100;
+      this.updatePreview();
+    });
+
+    const actions = this.contentEl.createDiv({ cls: "vaultcast-crop-actions" });
+    const cancel = actions.createEl("button", { text: "Cancel" });
+    cancel.addEventListener("click", () => this.close());
+    const apply = actions.createEl("button", { cls: "mod-cta", text: "Apply cover" });
+    apply.disabled = true;
+    apply.addEventListener("click", () => void this.applyCrop());
+
+    this.image.onload = () => {
+      apply.disabled = false;
+      this.updatePreview();
+    };
+    this.image.onerror = () => {
+      new Notice("VaultCast could not read that image.");
+      this.close();
+    };
+    this.image.src = this.sourceUrl;
+
+    this.preview.addEventListener("pointerdown", (event) => this.beginDrag(event));
+    this.preview.addEventListener("pointermove", (event) => this.continueDrag(event));
+    this.preview.addEventListener("pointerup", (event) => this.endDrag(event));
+    this.preview.addEventListener("pointercancel", (event) => this.endDrag(event));
+  }
+
+  onClose(): void {
+    URL.revokeObjectURL(this.sourceUrl);
+    this.contentEl.empty();
+    if (!this.settled) {
+      this.settled = true;
+      this.resolve(null);
+    }
+  }
+
+  private createRange(
+    label: string,
+    min: number,
+    max: number,
+    value: number,
+    onInput: (value: number) => void
+  ): void {
+    const row = this.contentEl.createDiv({ cls: "vaultcast-crop-control" });
+    row.createSpan({ text: label });
+    const input = row.createEl("input", {
+      attr: { type: "range", min: String(min), max: String(max), value: String(value) }
+    });
+    input.addEventListener("input", () => onInput(Number(input.value)));
+  }
+
+  private updatePreview(): void {
+    if (!this.preview || !this.previewImage || !this.image.naturalWidth) {
+      return;
+    }
+
+    const frame = this.preview.getBoundingClientRect();
+    const baseScale = Math.max(frame.width / this.image.naturalWidth, frame.height / this.image.naturalHeight);
+    const width = this.image.naturalWidth * baseScale * this.zoom;
+    const height = this.image.naturalHeight * baseScale * this.zoom;
+    const overflowX = Math.max(0, (width - frame.width) / 2);
+    const overflowY = Math.max(0, (height - frame.height) / 2);
+
+    this.previewImage.style.width = `${width}px`;
+    this.previewImage.style.height = `${height}px`;
+    this.previewImage.style.transform = `translate(-50%, -50%) translate(${this.positionX * overflowX}px, ${this.positionY * overflowY}px)`;
+  }
+
+  private beginDrag(event: PointerEvent): void {
+    if (!this.preview) return;
+    this.dragging = true;
+    this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.dragStartPositionX = this.positionX;
+    this.dragStartPositionY = this.positionY;
+    this.preview.setPointerCapture(event.pointerId);
+  }
+
+  private continueDrag(event: PointerEvent): void {
+    if (!this.dragging || !this.preview || !this.previewImage) return;
+    const frame = this.preview.getBoundingClientRect();
+    const image = this.previewImage.getBoundingClientRect();
+    const overflowX = Math.max(1, (image.width - frame.width) / 2);
+    const overflowY = Math.max(1, (image.height - frame.height) / 2);
+    this.positionX = clamp(this.dragStartPositionX + (event.clientX - this.dragStartX) / overflowX, -1, 1);
+    this.positionY = clamp(this.dragStartPositionY + (event.clientY - this.dragStartY) / overflowY, -1, 1);
+    this.updatePreview();
+  }
+
+  private endDrag(event: PointerEvent): void {
+    if (!this.dragging || !this.preview) return;
+    this.dragging = false;
+    this.preview.releasePointerCapture(event.pointerId);
+  }
+
+  private async applyCrop(): Promise<void> {
+    const outputWidth = 1000;
+    const outputHeight = 1050;
+    const canvas = document.createElement("canvas");
+    canvas.width = outputWidth;
+    canvas.height = outputHeight;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      new Notice("VaultCast could not create the cropped image.");
+      return;
+    }
+
+    const baseScale = Math.max(outputWidth / this.image.naturalWidth, outputHeight / this.image.naturalHeight);
+    const width = this.image.naturalWidth * baseScale * this.zoom;
+    const height = this.image.naturalHeight * baseScale * this.zoom;
+    const overflowX = Math.max(0, (width - outputWidth) / 2);
+    const overflowY = Math.max(0, (height - outputHeight) / 2);
+    const x = (outputWidth - width) / 2 + this.positionX * overflowX;
+    const y = (outputHeight - height) / 2 + this.positionY * overflowY;
+    context.drawImage(this.image, x, y, width, height);
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.9));
+    if (!blob) {
+      new Notice("VaultCast could not save the cropped image.");
+      return;
+    }
+
+    this.settled = true;
+    this.resolve(new File([blob], "background.jpg", { type: "image/jpeg" }));
+    this.close();
+  }
+}
+
 function formatTime(value: number): string {
   if (!Number.isFinite(value) || value < 0) {
     return "00:00";
@@ -658,6 +819,10 @@ function formatTime(value: number): string {
   const minutes = Math.floor(value / 60);
   const seconds = Math.floor(value % 60);
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 
 function formatDate(value: number): string {

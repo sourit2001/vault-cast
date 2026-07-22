@@ -9,7 +9,8 @@ export const DEFAULT_SETTINGS: VaultCastSettings = {
   sortDirection: "desc",
   playbackMode: "playlist-loop",
   theme: "default",
-  recentPlaysLimit: 10
+  recentPlaysLimit: 10,
+  backgroundPath: ""
 };
 
 export const DEFAULT_PLAYBACK_STATE: PlaybackState = {
