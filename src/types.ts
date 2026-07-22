@@ -19,6 +19,7 @@ export interface VaultCastSettings {
   playbackMode: PlaybackMode;
   theme: VaultCastTheme;
   recentPlaysLimit: number;
+  backgroundPath: string;
 }
 
 export interface AudioTrack {
