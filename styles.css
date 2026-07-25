@@ -1,13 +1,13 @@
 .vaultcast-view {
-  --vaultcast-bg: #fff8f1;
+  --vaultcast-bg: #f0f0ec;
   --vaultcast-panel: rgba(255, 255, 255, 0.74);
   --vaultcast-panel-strong: rgba(255, 255, 255, 0.92);
-  --vaultcast-text: #312b2b;
-  --vaultcast-muted: rgba(49, 43, 43, 0.62);
-  --vaultcast-accent: #ff7a8a;
-  --vaultcast-accent-2: #ffd166;
-  --vaultcast-line: rgba(49, 43, 43, 0.11);
-  --vaultcast-shadow: 0 14px 34px rgba(70, 46, 28, 0.12);
+  --vaultcast-text: #303330;
+  --vaultcast-muted: rgba(48, 51, 48, 0.62);
+  --vaultcast-accent: #707873;
+  --vaultcast-accent-2: #9b9d95;
+  --vaultcast-line: rgba(48, 51, 48, 0.11);
+  --vaultcast-shadow: 0 14px 34px rgba(49, 55, 51, 0.12);
   --vaultcast-radius: 8px;
   height: 100%;
   overflow: auto;
@@ -18,79 +18,108 @@
 }
 
 .vaultcast-view.has-cover-image {
-  --vaultcast-panel: rgba(18, 18, 18, 0.48);
-  --vaultcast-panel-strong: rgba(255, 255, 255, 0.78);
-  --vaultcast-text: #fff;
-  --vaultcast-muted: rgba(255, 255, 255, 0.78);
-  --vaultcast-line: rgba(255, 255, 255, 0.18);
-  --vaultcast-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+  --vaultcast-panel: color-mix(in srgb, var(--vaultcast-bg) 78%, transparent);
+  --vaultcast-panel-strong: color-mix(in srgb, var(--vaultcast-bg) 90%, transparent);
+  --vaultcast-line: color-mix(in srgb, var(--vaultcast-text) 13%, transparent);
+  --vaultcast-shadow: 0 18px 42px color-mix(in srgb, var(--vaultcast-text) 18%, transparent);
   position: relative;
   isolation: isolate;
-  background: #151515;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--vaultcast-bg);
 }
 
-.vaultcast-view.has-cover-image::before {
-  position: absolute;
-  z-index: -2;
-  inset: -28px;
-  background: var(--vaultcast-cover-image) center / cover no-repeat;
-  content: "";
-  filter: blur(22px) saturate(0.9);
-  opacity: 0.82;
+.vaultcast-background {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  grid-area: 1 / 1;
+  align-self: start;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   pointer-events: none;
+}
+
+.vaultcast-background::before,
+.vaultcast-background::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.vaultcast-background::before {
+  inset: -42px;
+  background: var(--vaultcast-cover-image) center / cover no-repeat;
+  filter: blur(24px) saturate(1.08) brightness(1.08);
   transform: scale(1.06);
 }
 
-.vaultcast-view.has-cover-image::after {
-  position: absolute;
-  z-index: -1;
+.vaultcast-background::after {
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.5));
-  content: "";
-  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--vaultcast-accent) 20%, transparent), transparent 40%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--vaultcast-bg) 14%, transparent),
+      color-mix(in srgb, var(--vaultcast-bg) 30%, transparent)
+    );
 }
 
-.vaultcast-theme-spring {
-  --vaultcast-bg: #fbfff8;
-  --vaultcast-text: #26352a;
-  --vaultcast-muted: rgba(38, 53, 42, 0.64);
-  --vaultcast-accent: #7fcf93;
-  --vaultcast-accent-2: #ffb7c7;
-  --vaultcast-line: rgba(38, 53, 42, 0.12);
-  --vaultcast-shadow: 0 14px 34px rgba(65, 104, 70, 0.12);
+.vaultcast-theme-stone {
+  --vaultcast-bg: #f0f0ec;
+  --vaultcast-text: #303330;
+  --vaultcast-muted: rgba(48, 51, 48, 0.64);
+  --vaultcast-accent: #707873;
+  --vaultcast-accent-2: #9b9d95;
+  --vaultcast-line: rgba(48, 51, 48, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(49, 55, 51, 0.12);
 }
 
-.vaultcast-theme-summer {
-  --vaultcast-bg: #f5fbff;
-  --vaultcast-text: #183042;
-  --vaultcast-muted: rgba(24, 48, 66, 0.64);
-  --vaultcast-accent: #50b7ff;
-  --vaultcast-accent-2: #ffe779;
-  --vaultcast-line: rgba(24, 48, 66, 0.12);
-  --vaultcast-shadow: 0 14px 34px rgba(33, 111, 160, 0.13);
+.vaultcast-theme-sage {
+  --vaultcast-bg: #eef2eb;
+  --vaultcast-text: #2d352f;
+  --vaultcast-muted: rgba(45, 53, 47, 0.64);
+  --vaultcast-accent: #6e826b;
+  --vaultcast-accent-2: #9faa92;
+  --vaultcast-line: rgba(45, 53, 47, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(56, 75, 61, 0.12);
 }
 
-.vaultcast-theme-autumn {
-  --vaultcast-bg: #fff9f1;
-  --vaultcast-text: #3d2518;
-  --vaultcast-muted: rgba(61, 37, 24, 0.64);
-  --vaultcast-accent: #e88945;
-  --vaultcast-accent-2: #d94848;
-  --vaultcast-line: rgba(61, 37, 24, 0.12);
-  --vaultcast-shadow: 0 14px 34px rgba(131, 69, 31, 0.14);
+.vaultcast-theme-wine {
+  --vaultcast-bg: #f2edef;
+  --vaultcast-text: #382f32;
+  --vaultcast-muted: rgba(56, 47, 50, 0.64);
+  --vaultcast-accent: #835e63;
+  --vaultcast-accent-2: #a88a8e;
+  --vaultcast-line: rgba(56, 47, 50, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(77, 55, 60, 0.13);
 }
 
-.vaultcast-theme-winter {
-  --vaultcast-bg: #f6f8ff;
-  --vaultcast-text: #202942;
-  --vaultcast-muted: rgba(32, 41, 66, 0.64);
-  --vaultcast-accent: #87bfff;
-  --vaultcast-accent-2: #c8b6ff;
-  --vaultcast-line: rgba(32, 41, 66, 0.12);
-  --vaultcast-shadow: 0 14px 34px rgba(53, 74, 120, 0.14);
+.vaultcast-theme-mist {
+  --vaultcast-bg: #edf1f3;
+  --vaultcast-text: #2c353a;
+  --vaultcast-muted: rgba(44, 53, 58, 0.64);
+  --vaultcast-accent: #667e8a;
+  --vaultcast-accent-2: #98a8af;
+  --vaultcast-line: rgba(44, 53, 58, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(51, 70, 79, 0.13);
+}
+
+.vaultcast-theme-mauve {
+  --vaultcast-bg: #f1eef2;
+  --vaultcast-text: #353037;
+  --vaultcast-muted: rgba(53, 48, 55, 0.64);
+  --vaultcast-accent: #786d7e;
+  --vaultcast-accent-2: #a49ba7;
+  --vaultcast-line: rgba(53, 48, 55, 0.12);
+  --vaultcast-shadow: 0 14px 34px rgba(68, 59, 72, 0.13);
 }
 
 .vaultcast-shell {
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -140,7 +169,7 @@
 }
 
 .vaultcast-hero.has-cover {
-  color: #fff;
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-hero-top,
@@ -263,8 +292,8 @@
 .vaultcast-hero.has-cover .vaultcast-kicker,
 .vaultcast-hero.has-cover .vaultcast-track-title,
 .vaultcast-hero.has-cover .vaultcast-track-subtitle {
-  color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.42);
+  color: var(--vaultcast-text);
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.72);
 }
 
 .vaultcast-hero.has-cover .vaultcast-track-subtitle {
@@ -272,51 +301,59 @@
 }
 
 .vaultcast-hero.has-cover .vaultcast-art {
-  background: rgba(0, 0, 0, 0.36);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 34px rgba(48, 43, 37, 0.16);
 }
 
 .vaultcast-hero.has-cover .vaultcast-icon-button,
 .vaultcast-hero.has-cover .vaultcast-latest-button,
 .vaultcast-hero.has-cover .vaultcast-note-button {
-  background: rgba(255, 255, 255, 0.84);
-  color: #1f1f1f;
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-controls,
 .vaultcast-view.has-cover-image .vaultcast-section {
-  color: #fff;
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-track-item,
 .vaultcast-view.has-cover-image .vaultcast-recent-item {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(14, 16, 24, 0.44);
-  color: #fff;
+  border: 1px solid var(--vaultcast-line);
+  background: color-mix(in srgb, var(--vaultcast-bg) 68%, transparent);
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-track-item:hover,
-.vaultcast-view.has-cover-image .vaultcast-track-item.is-active,
 .vaultcast-view.has-cover-image .vaultcast-recent-item:hover {
-  background: rgba(44, 58, 92, 0.68);
+  border-color: color-mix(in srgb, var(--vaultcast-accent) 34%, transparent);
+  background: color-mix(in srgb, var(--vaultcast-accent) 18%, var(--vaultcast-panel-strong));
+}
+
+.vaultcast-view.has-cover-image .vaultcast-track-item.is-active {
+  border-color: color-mix(in srgb, var(--vaultcast-accent) 56%, transparent);
+  background: color-mix(in srgb, var(--vaultcast-accent) 30%, var(--vaultcast-panel-strong));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--vaultcast-accent) 18%, transparent),
+    0 8px 20px color-mix(in srgb, var(--vaultcast-accent) 12%, transparent);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-track-marker,
 .vaultcast-view.has-cover-image .vaultcast-track-progress.is-completed {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: color-mix(in srgb, var(--vaultcast-accent) 24%, var(--vaultcast-panel-strong));
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-track-meta,
 .vaultcast-view.has-cover-image .vaultcast-track-progress {
-  color: rgba(255, 255, 255, 0.74);
+  color: var(--vaultcast-muted);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-pill-button,
 .vaultcast-view.has-cover-image .vaultcast-volume,
 .vaultcast-view.has-cover-image .vaultcast-search {
-  background: rgba(255, 255, 255, 0.78);
-  color: #1f1f1f;
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-search::placeholder {
@@ -324,8 +361,8 @@
 }
 
 .vaultcast-view.has-cover-image .vaultcast-select {
-  background: rgba(255, 255, 255, 0.86);
-  color: #1f1f1f;
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
 }
 
 .vaultcast-latest-button,
@@ -805,24 +842,25 @@
 .vaultcast-view.has-cover-image .vaultcast-volume,
 .vaultcast-view.has-cover-image .vaultcast-search,
 .vaultcast-view.has-cover-image .vaultcast-select {
-  border: 0;
-  background: rgba(25, 27, 31, 0.78);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--vaultcast-line);
+  background: var(--vaultcast-panel-strong);
+  color: var(--vaultcast-text);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--vaultcast-text) 13%, transparent);
   backdrop-filter: blur(16px);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-hero .vaultcast-latest-button {
+  border-color: color-mix(in srgb, var(--vaultcast-accent) 38%, transparent);
   background: linear-gradient(135deg, var(--vaultcast-accent), var(--vaultcast-accent-2));
-  color: #17191c;
+  color: color-mix(in srgb, var(--vaultcast-text) 84%, black);
   box-shadow:
-    inset 0 0 0 4px rgba(255, 255, 255, 0.12),
-    0 10px 24px rgba(0, 0, 0, 0.22);
+    inset 0 0 0 4px rgba(255, 255, 255, 0.18),
+    0 10px 24px color-mix(in srgb, var(--vaultcast-accent) 22%, transparent);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-volume-label,
 .vaultcast-view.has-cover-image .vaultcast-search::placeholder {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--vaultcast-muted);
 }
 
 .vaultcast-view.has-cover-image .vaultcast-volume input,
@@ -843,8 +881,9 @@
 }
 
 .vaultcast-track-item.is-active {
-  border-color: color-mix(in srgb, var(--vaultcast-accent) 28%, transparent);
-  background: color-mix(in srgb, var(--vaultcast-accent) 15%, var(--vaultcast-panel-strong));
+  border-color: color-mix(in srgb, var(--vaultcast-accent) 48%, transparent);
+  background: color-mix(in srgb, var(--vaultcast-accent) 26%, var(--vaultcast-panel-strong));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vaultcast-accent) 14%, transparent);
 }
 
 .vaultcast-track-marker {

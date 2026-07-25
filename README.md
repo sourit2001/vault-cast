@@ -17,7 +17,7 @@ It is designed for people who generate, download, or sync audio into their vault
 - Resume from the last saved position
 - Mark tracks as completed after listening
 - Recent plays list
-- Seasonal themes: Default, Spring, Summer, Autumn, and Winter
+- Low-saturation color styles: Stone, Sage, Wine, Mist, and Mauve
 - Global player background image
 - Open same-name Markdown notes for audio files
 - Mobile-friendly main-area player command
@@ -139,7 +139,7 @@ Open VaultCast player in main area
 - **Sort method**: name, created time, or modified time
 - **Sort direction**: ascending or descending
 - **Playback mode**: loop, sequential, single loop, or shuffle
-- **Theme**: seasonal visual theme
+- **Color style**: low-saturation colors for controls and glass panels
 - **Recent plays limit**: number of recent tracks to keep
 
 ## Development

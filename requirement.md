@@ -303,48 +303,49 @@ Saved fields:
 
 ---
 
-## 6. Theme System
+## 6. Color Style System
 
-V1 should include a simple visual theme system.
+V1 should include a simple low-saturation color style system.
 
 The goal is to make the player feel cute, pleasant, and personal without making the first version too complex.
 
 Cover customization is not a priority for V1. The first version only needs a few simple default visual styles.
 
-### 6.1 Built-In Seasonal Themes
+### 6.1 Built-In Color Styles
 
-Initial built-in themes should be seasonal and friendly:
+Initial built-in styles should be restrained and easy to pair with different uploaded images:
 
-- Spring
-- Summer
-- Autumn
-- Winter
-- Default
+- Stone
+- Sage
+- Wine
+- Mist
+- Mauve
 
-Theme settings may control:
+Color style settings may control:
 
-- Background
+- Glass panel tint
 - Accent color
 - Text color
 - Button style
 - Progress bar color
 - Playlist highlight
-- Cover/visual area gradient
+- A subtle tint over the blurred background
 
-Theme direction:
+Color direction:
 
-- Cute and warm
+- Low saturation
 - Light enough for daily use
 - Clean enough for reading filenames
 - Soft color contrast
 - Not too corporate or technical
 
-Possible theme examples:
+Built-in palette direction:
 
-- Spring: soft green, pink, and warm white
-- Summer: sky blue, lemon, and clean white
-- Autumn: amber, warm red, and cream
-- Winter: icy blue, lavender, and deep navy
+- Stone: neutral gray and warm off-white
+- Sage: muted grass green
+- Wine: gray-toned burgundy
+- Mist: muted blue-gray
+- Mauve: smoky gray-purple
 
 ### 6.2 Default Visual Area
 
@@ -436,8 +437,8 @@ Settings:
   - Default: Descending
 - Playback Mode
   - Default: Playlist loop
-- Theme
-  - Default: Default
+- Color Style
+  - Default: Stone
 - Recent Plays Limit
   - Default: 10
 

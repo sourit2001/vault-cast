@@ -1,6 +1,6 @@
 import { ItemView, Modal, Notice, WorkspaceLeaf, setIcon } from "obsidian";
 import type VaultCastPlugin from "./main";
-import { themeClass } from "./theme";
+import { themeClass, themeLabel } from "./theme";
 import { AudioTrack, PlaybackMode } from "./types";
 
 export const VAULTCAST_VIEW_TYPE = "vaultcast-player-view";
@@ -120,6 +120,11 @@ export class VaultCastPlayerView extends ItemView {
       "vaultcast-theme-summer",
       "vaultcast-theme-autumn",
       "vaultcast-theme-winter",
+      "vaultcast-theme-stone",
+      "vaultcast-theme-sage",
+      "vaultcast-theme-wine",
+      "vaultcast-theme-mist",
+      "vaultcast-theme-mauve",
       "has-cover-image"
     );
     container.addClass(themeClass(this.plugin.settings.theme));
@@ -128,6 +133,11 @@ export class VaultCastPlayerView extends ItemView {
       container.style.setProperty("--vaultcast-cover-image", `url("${coverUrl.replace(/"/g, '\\"')}")`);
     } else {
       container.style.removeProperty("--vaultcast-cover-image");
+    }
+
+    if (coverUrl) {
+      const background = container.createDiv({ cls: "vaultcast-background" });
+      background.setAttr("aria-hidden", "true");
     }
 
     const shell = container.createDiv({ cls: "vaultcast-shell" });
@@ -140,6 +150,7 @@ export class VaultCastPlayerView extends ItemView {
   private renderHero(parent: HTMLElement, coverUrl: string | null): void {
     const hero = parent.createDiv({ cls: coverUrl ? "vaultcast-hero has-cover" : "vaultcast-hero" });
     const top = hero.createDiv({ cls: "vaultcast-hero-top" });
+    top.createDiv({ cls: "vaultcast-kicker", text: themeLabel(this.plugin.settings.theme) });
 
     const topActions = top.createDiv({ cls: "vaultcast-hero-actions" });
     const coverInput = topActions.createEl("input", {
@@ -165,6 +176,23 @@ export class VaultCastPlayerView extends ItemView {
         void this.cropAndUploadBackground(file);
       }
     });
+
+    const resetThemeButton = topActions.createEl("button", {
+      cls: "vaultcast-icon-button",
+      attr: { "aria-label": "Reset color style and background" }
+    });
+    setIcon(resetThemeButton, "rotate-ccw");
+    resetThemeButton.disabled = this.plugin.settings.theme === "stone" && !this.plugin.settings.backgroundPath;
+    resetThemeButton.addEventListener("click", () => {
+      void this.resetTheme();
+    });
+
+    const refreshButton = topActions.createEl("button", {
+      cls: "vaultcast-icon-button",
+      attr: { "aria-label": "Refresh playlist" }
+    });
+    setIcon(refreshButton, "refresh-cw");
+    refreshButton.addEventListener("click", () => this.plugin.refreshLibrary());
 
     const art = hero.createDiv({ cls: "vaultcast-art" });
     if (coverUrl) {
@@ -407,6 +435,17 @@ export class VaultCastPlayerView extends ItemView {
     const backgroundFile = this.plugin.audioLibrary.getFile(backgroundPath);
     const cacheKey = this.backgroundCacheKeys[backgroundPath] ?? backgroundFile?.stat.mtime ?? 0;
     return cacheKey > 0 ? `${backgroundUrl}${backgroundUrl.includes("?") ? "&" : "?"}v=${cacheKey}` : backgroundUrl;
+  }
+
+  private async resetTheme(): Promise<void> {
+    if (this.plugin.settings.theme === "stone" && !this.plugin.settings.backgroundPath) {
+      return;
+    }
+
+    this.plugin.settings.theme = "stone";
+    this.plugin.settings.backgroundPath = "";
+    await this.plugin.savePluginData();
+    this.render();
   }
 
   private renderRecent(parent: HTMLElement): void {
