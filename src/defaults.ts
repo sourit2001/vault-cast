@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS: VaultCastSettings = {
   sortMethod: "modifiedTime",
   sortDirection: "desc",
   playbackMode: "playlist-loop",
-  theme: "default",
+  theme: "stone",
   recentPlaysLimit: 10,
   backgroundPath: ""
 };

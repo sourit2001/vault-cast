@@ -4,6 +4,7 @@ import { DEFAULT_PLAYBACK_STATE, DEFAULT_SETTINGS } from "./defaults";
 import { PlaybackStore } from "./playback-store";
 import { VAULTCAST_VIEW_TYPE, VaultCastPlayerView } from "./player-view";
 import { VaultCastSettingTab } from "./settings";
+import { normalizeTheme } from "./theme";
 import { AudioTrack, VaultCastData, VaultCastSettings } from "./types";
 
 export default class VaultCastPlugin extends Plugin {
@@ -117,7 +118,8 @@ export default class VaultCastPlugin extends Plugin {
     const data = (await this.loadData()) as Partial<VaultCastData> | null;
     this.settings = {
       ...DEFAULT_SETTINGS,
-      ...data?.settings
+      ...data?.settings,
+      theme: normalizeTheme(data?.settings?.theme)
     };
     this.playbackStore = new PlaybackStore({
       ...DEFAULT_PLAYBACK_STATE,

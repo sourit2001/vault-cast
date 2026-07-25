@@ -134,8 +134,8 @@ export class VaultCastSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName("Theme")
-      .setDesc("A simple seasonal skin for the player.")
+      .setName("Color style")
+      .setDesc("Low-saturation colors for controls and glass panels. The uploaded image remains the player background.")
       .addDropdown((dropdown) => {
         THEME_OPTIONS.forEach((theme) => {
           dropdown.addOption(theme.value, theme.label);

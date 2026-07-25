@@ -7,7 +7,7 @@ export type ImageExtension = (typeof IMAGE_EXTENSIONS)[number];
 export type SortMethod = "name" | "createdTime" | "modifiedTime";
 export type SortDirection = "asc" | "desc";
 export type PlaybackMode = "sequential" | "playlist-loop" | "single-loop" | "shuffle";
-export type VaultCastTheme = "default" | "spring" | "summer" | "autumn" | "winter";
+export type VaultCastTheme = "stone" | "sage" | "wine" | "mist" | "mauve";
 
 export interface VaultCastSettings {
   audioFolder: string;
