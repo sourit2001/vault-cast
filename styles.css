@@ -1,3 +1,7 @@
+.workspace-leaf-content[data-type="vaultcast-player-view"] .view-content {
+  padding: 0;
+}
+
 .vaultcast-view {
   --vaultcast-bg: #f0f0ec;
   --vaultcast-panel: rgba(255, 255, 255, 0.74);
@@ -10,6 +14,7 @@
   --vaultcast-shadow: 0 14px 34px rgba(49, 55, 51, 0.12);
   --vaultcast-radius: 8px;
   height: 100%;
+  padding: 0;
   overflow: auto;
   background:
     radial-gradient(circle at top left, color-mix(in srgb, var(--vaultcast-accent) 18%, transparent), transparent 34%),
@@ -63,6 +68,17 @@
       180deg,
       color-mix(in srgb, var(--vaultcast-bg) 14%, transparent),
       color-mix(in srgb, var(--vaultcast-bg) 30%, transparent)
+    );
+}
+
+body:not(.is-mobile)
+  .workspace-leaf-content[data-type="vaultcast-player-view"]
+  .vaultcast-background::after {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--vaultcast-bg) 4%, transparent),
+      color-mix(in srgb, var(--vaultcast-bg) 10%, transparent)
     );
 }
 
@@ -141,8 +157,10 @@
 }
 
 .is-mobile .vaultcast-hero-top {
-  top: max(96px, calc(env(safe-area-inset-top, 0px) + 64px));
+  top: 16px;
   right: 16px;
+  left: auto;
+  justify-content: flex-end;
 }
 
 .is-mobile .vaultcast-controls,
@@ -190,16 +208,6 @@
 
 .vaultcast-cover-input {
   display: none;
-}
-
-.vaultcast-kicker {
-  overflow: hidden;
-  color: var(--vaultcast-muted);
-  font-size: 12px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .vaultcast-art {
@@ -289,7 +297,6 @@
   height: 15px;
 }
 
-.vaultcast-hero.has-cover .vaultcast-kicker,
 .vaultcast-hero.has-cover .vaultcast-track-title,
 .vaultcast-hero.has-cover .vaultcast-track-subtitle {
   color: var(--vaultcast-text);
@@ -702,30 +709,6 @@
   justify-content: flex-end;
 }
 
-.vaultcast-kicker {
-  max-width: calc(100% - 126px);
-  padding: 7px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #20241e;
-  box-shadow: 0 8px 24px rgba(16, 22, 12, 0.1);
-  backdrop-filter: blur(14px);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-}
-
-.vaultcast-kicker::before {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 7px;
-  border-radius: 50%;
-  background: var(--vaultcast-accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vaultcast-accent) 18%, transparent);
-  content: "";
-}
-
 .vaultcast-hero-actions {
   gap: 5px;
 }
@@ -909,10 +892,6 @@
 
   .vaultcast-art {
     min-height: 160px;
-  }
-
-  .vaultcast-kicker {
-    max-width: calc(100% - 98px);
   }
 
   .vaultcast-hero-actions .vaultcast-icon-button {
